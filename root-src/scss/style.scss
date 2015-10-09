@@ -1,0 +1,143 @@
+* {
+  box-sizing: border-box;
+}
+body {
+    margin: 0 0 0 280px;
+    color: #000;
+    background: #fff;
+    font-size: 16px;
+    font-family: sans-serif;
+}
+h1, h2, h3 {
+    font-weight: normal;
+    margin: 0.5em 0;
+}
+/* code toggle buttons */
+.style-toggle + pre {
+    display: none;
+}
+.style-toggle--open + pre {
+    display: block;
+}
+.style-toggle--open-text {
+    display: none;
+}
+.style-toggle--open .style-toggle--open-text {
+    display: block;
+}
+.style-toggle--open .style-toggle--closed-text {
+    display: none;
+}
+.style-status-yes {
+    color: #0c0;
+}
+.style-status-no {
+    color: #999;
+}
+.style-status-error {
+    color: #c00;
+}
+/* progress bar */
+.style-progress {
+    position: fixed;
+    top: 0;
+    right: 40px;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    margin: 0;
+    padding: 20px;
+    color: #fff;
+    background: rgba(0,0,0,0.9);
+    font-family: monospace;
+    font-size: 0.8rem;
+    opacity: 0;
+    transform: translate3d(-98%, 0, 0);
+    transition: transform 200ms, opacity 200ms;
+    transition-delay: 0ms;
+    overflow: hidden;
+}
+.style-progress-active,
+.style-progress:hover {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    transition-delay: 250ms;
+    overflow: auto;
+}
+.style-progress-title {
+    margin: 0 0 0.5em;
+    font-size: 3em;
+}
+.style-progress-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+@media screen AND (min-width:1000px) {
+    .style-progress-list {
+        -webkit-columns: 2 300px;
+        -moz-columns:    2 300px;
+        columns:         2 300px;
+    }
+}
+/* navigation */
+.style-nav-wrap {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 0;
+}
+.style-nav {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 280px;
+    padding: 20px;
+    background: #eee;
+    overflow: auto;
+}
+.style-nav-title {
+    margin: 0;
+    font-size: 1.5em;
+    text-transform: uppercase;
+}
+.style-nav-menu {
+    margin: 1em -20px 0;
+    border-top: 1px solid #fff;
+}
+.style-nav-link {
+    display: block;
+    position: relative;
+    padding: 0.25em 20px 0.25em 5em;
+    border-bottom: 1px solid #fff;
+}
+.style-nav-link:hover {
+    background: #ddd;
+}
+.style-nav-link-section {
+    display: inline-block;
+    position: absolute;
+    left: 20px;
+    top: 0.25em;
+    margin: 0;
+    font-size: 1em;
+    font-weight: 800;
+}
+/* main body */
+.style-body {
+}
+.style-block>h2:first-child {
+    margin-top: 0;
+}
+/* iframe code blocks */
+.style-iframe {
+    width: 100%;
+    min-height: 505px;
+    margin: 1em 0;
+    border: 0;
+}
+
+
+@import "_markdown.scss";
