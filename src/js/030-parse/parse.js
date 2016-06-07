@@ -1,0 +1,3 @@
+var guideParse = function(text) {
+  
+}

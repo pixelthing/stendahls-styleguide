@@ -1,14 +1,16 @@
-/// <vs AfterBuild='build' Clean='clean' SolutionOpened='default' />
 module.exports = function(grunt) {
 
   // Project configuration.
+  //var compression = require('compression');
   grunt.initConfig({
     config: {
-      src:  'root-src',
-      dev:  'root-dev'
+      src:  'src',
+      devClient:  'devClient',
+      devClientFolder:  'patterns',
+      dev:  'devClient'
     },
     jshint: {
-      files: ['Gruntfile.js', '<%= config.src %>/js/*.js'],
+      files: ['Gruntfile.js', '<%= config.src %>/js/*.js', '<%= config.src %>/js/**/*.js'],
       options: {
         globals: {
           jQuery: false
@@ -30,42 +32,15 @@ module.exports = function(grunt) {
       }
     },
     clean: {
-      preTmp: {
+      devClient: {
         files: [
           {
             expand: true,
-            cwd: '.tmp/',
+            cwd: '<%= config.devClient %>/style/',
             src: '**/*',
           },
         ],
       },
-      preInt: {
-        files: [
-          {
-            expand: true,
-            cwd: '<%= config.src %>/tmp',
-            src: '**/*',
-          },
-        ],
-      },
-      preDev: {
-        files: [
-          {
-            expand: true,
-            cwd: '<%= config.dev %>/style/',
-            src: '**/*',
-          },
-        ],
-      },
-      post: {
-        files: [
-          {
-            expand: true,
-            cwd: '<%= config.src %>/tmp',
-            src: '**/*',
-          },
-        ],
-      }
     },
     concat: {
       options: {
@@ -74,9 +49,10 @@ module.exports = function(grunt) {
       },
       dev: {
         src: [
-          '<%= config.src %>/js/*',
+          '<%= config.src %>/js/**/*.js',
+          '<%= config.src %>/js/*.js',
         ],
-        dest: '<%= config.src %>/tmp/app.js',
+        dest: '<%= config.devClient %>/<%= config.devClientFolder %>/app.js',
       },
     },
     sass: {
@@ -85,71 +61,81 @@ module.exports = function(grunt) {
       },
       dev: {
         files: {
-          '<%= config.src %>/tmp/style.css': '<%= config.src %>/scss/style.scss'
+          '<%= config.devClient %>/<%= config.devClientFolder %>/style.css': '<%= config.src %>/scss/style.scss'
         },
       },
     },
-    postcss: {
+
+    autoprefixer: {
         options: {
-            map: true,
-            processors: [
-                require('autoprefixer')({
-                    browsers: ['last 3 versions']
-                }),
-                require('csswring')
+          "config": {
+            "autoprefixerBrowsers": [
+              "Android 2.3",
+              "Android >= 4",
+              "Chrome >= 20",
+              "Firefox >= 24",
+              "Explorer >= 8",
+              "iOS >= 6",
+              "Opera >= 12",
+              "Safari >= 6"
             ]
+          }
         },
-        dev: {
-            src: '<%= config.src %>/tmp/*.css'
+        core: {
+            options: {
+                map: true
+            },
+            src: '<%= config.devClient %>/<%= config.devClientFolder %>/style.css'
         }
     },
-    embed: {
-      options: {
-      },
-      some_target: {
-        files: {
-          '<%= config.dev %>/style/style.html': '<%= config.src %>/style.html'
+
+    copy: {
+        root: {
+            expand: true,
+            cwd: '<%= config.src %>/',
+            src: [ '*.html', '*.txt', '*.json' ],
+            dest: '<%= config.devClient %>/<%= config.devClientFolder %>/'
         }
-      }
     },
+    
     connect: {
       server: {
         options: {
-          port: 8000,
-          hostname: '*'
-        }
-      },
-      dev : {
-        options: {
-          base: '<%= config.dev %>'
+          port: 8118,
+          hostname: '*',
+          //middleware: function(connect, options, middlewares) {
+          //  middlewares.unshift(compression());
+          //  return middlewares;
+          //}
         }
       }
     },
+    
     watch: {
       page: {
-        files: ['<%= config.src %>/*.style'],
+        files: ['<%= config.src %>/index.html'],
+        tasks: ['copy'],
       },
       sass: {
         files: ['<%= config.src %>/**/*.scss'],
-        tasks: ['sass', 'postcss', 'embed'],
+        tasks: ['sass', 'autoprefixer'],
         options: {
           livereload: true,
         },
       },
       script: {
-        files: ['<%= config.src %>/**/*.js'],
-        tasks: ['concat', 'embed'],
+        files: ['<%= config.src %>/js/init.js','<%= config.src %>/js/**/*.js'],
+        tasks: ['concat'],
       }
     }
+    
   });
+  
+  require('load-grunt-tasks')(grunt, { scope: 'devDependencies' });
+  require('time-grunt')(grunt);
 
-  require('load-grunt-tasks')(grunt);
-  grunt.loadNpmTasks('grunt-embed');
-  grunt.loadNpmTasks('grunt-postcss');
-  grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.registerTask('devClientBuild', [ 'clean:devClient', 'concat', 'sass', 'autoprefixer', 'copy']);
 
-  grunt.registerTask('devbuild', [ 'clean:preTmp', 'clean:preInt', 'clean:preDev', 'concat', 'sass', 'postcss', 'embed']);
-
-  grunt.registerTask('default', ['devbuild', 'connect:dev', 'watch']);
+  grunt.registerTask('default', ['devClientBuild', 'connect', 'watch']);
 
 };
